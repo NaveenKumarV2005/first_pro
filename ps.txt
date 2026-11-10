@@ -1,0 +1,2 @@
+CONTAINER ID   IMAGE            COMMAND                  CREATED          STATUS          PORTS                                         NAMES
+b136ef9941ca   calculator:1.0   "python calculator.py"   17 minutes ago   Up 17 minutes   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp   calculator
