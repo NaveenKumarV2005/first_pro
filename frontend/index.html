@@ -1,0 +1,343 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Calc Pro | Python Calculator</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #101827, #243b55);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            font-size: 32px;
+            color: #38d9a9;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #b6c3d4;
+        }
+
+        .calculator {
+            background: #1c2638;
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .result-box {
+            background: #101827;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .result-box span {
+            color: #9baabd;
+            font-size: 12px;
+        }
+
+        .result-box h2 {
+            color: #38d9a9;
+            font-size: 38px;
+            margin: 12px 0;
+            overflow-wrap: anywhere;
+        }
+
+        .result-box p {
+            color: #9baabd;
+            font-size: 13px;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 8px;
+            color: #d5dce7;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border-radius: 8px;
+            border: 1px solid #39485f;
+            background: #101827;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #38d9a9;
+        }
+
+        .operations {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .operation {
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #101827;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .operation.active {
+            background: #087f65;
+        }
+
+        #calculateBtn {
+            width: 100%;
+            margin-top: 25px;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: #16a085;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #calculateBtn:hover {
+            background: #11856e;
+        }
+
+        #calculateBtn:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            color: #ff8b8b;
+            font-size: 14px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #b6c3d4;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>⚡ Calc Pro</h1>
+            <p>Python Powered Calculator</p>
+        </header>
+
+        <div class="calculator">
+
+            <div class="result-box">
+                <span>CALCULATION RESULT</span>
+                <h2 id="result">0</h2>
+                <p id="expression">Enter your calculation</p>
+            </div>
+
+            <form id="calculatorForm">
+
+                <label>First Number</label>
+
+                <input
+                    type="number"
+                    id="num1"
+                    step="any"
+                    placeholder="Enter first number"
+                    required
+                >
+
+                <label>Select Operation</label>
+
+                <div class="operations">
+
+                    <button type="button"
+                        class="operation active"
+                        data-value="add">+</button>
+
+                    <button type="button"
+                        class="operation"
+                        data-value="subtract">−</button>
+
+                    <button type="button"
+                        class="operation"
+                        data-value="multiply">×</button>
+
+                    <button type="button"
+                        class="operation"
+                        data-value="divide">÷</button>
+
+                </div>
+
+                <label>Second Number</label>
+
+                <input
+                    type="number"
+                    id="num2"
+                    step="any"
+                    placeholder="Enter second number"
+                    required
+                >
+
+                <button type="submit" id="calculateBtn">
+                    Calculate
+                </button>
+
+            </form>
+
+            <p id="message"></p>
+
+        </div>
+
+        <footer>
+            <p>Frontend: HTML, CSS & JavaScript</p>
+            <p>Backend: Python FastAPI + Docker</p>
+        </footer>
+
+    </div>
+
+    <script>
+
+        const form = document.getElementById("calculatorForm");
+
+        const result = document.getElementById("result");
+        const expression = document.getElementById("expression");
+        const message = document.getElementById("message");
+
+        const calculateBtn = document.getElementById("calculateBtn");
+
+        let selectedOperation = "add";
+
+        const symbols = {
+            add: "+",
+            subtract: "-",
+            multiply: "×",
+            divide: "÷"
+        };
+
+        // Select operation
+
+        document.querySelectorAll(".operation").forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                document.querySelectorAll(".operation")
+                    .forEach(btn => btn.classList.remove("active"));
+
+                button.classList.add("active");
+
+                selectedOperation = button.dataset.value;
+
+            });
+
+        });
+
+        // Calculate using Python backend
+
+        form.addEventListener("submit", async (event) => {
+
+            event.preventDefault();
+
+            const num1 = document.getElementById("num1").value;
+            const num2 = document.getElementById("num2").value;
+
+            if (num1 === "" || num2 === "") {
+                message.textContent = "Please enter both numbers";
+                return;
+            }
+
+            calculateBtn.disabled = true;
+            calculateBtn.textContent = "Calculating...";
+            message.textContent = "";
+
+            try {
+
+                const response = await fetch("/calculate", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        num1: Number(num1),
+                        num2: Number(num2),
+                        operation: selectedOperation
+                    })
+
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || "Calculation failed");
+                }
+
+                result.textContent = data.result;
+
+                expression.textContent =
+                    `${num1} ${symbols[selectedOperation]} ${num2}`;
+
+            }
+
+            catch (error) {
+
+                result.textContent = "Error";
+                expression.textContent = "";
+                message.textContent = error.message;
+
+            }
+
+            finally {
+
+                calculateBtn.disabled = false;
+                calculateBtn.textContent = "Calculate";
+
+            }
+
+        });
+
+    </script>
+
+</body>
+</html>

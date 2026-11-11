@@ -1,58 +1,72 @@
 
-from flask import Flask, request, jsonify
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import logging
 
-app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-@app.route("/")
+app = FastAPI(
+    title="Python Calculator API",
+    description="Dockerized calculator application",
+    version="1.0.0"
+)
+
+class Calculation(BaseModel):
+    num1: float
+    num2: float
+    operation: str
+
+@app.get("/")
 def home():
-    return jsonify({
-        "message": "Welcome to Docker Calculator API",
-        "operations": [
-            "addition",
-            "subtraction",
-            "multiplication",
-            "division"
-        ]
-    })
+    return {
+        "message": "Python Calculator API is running"
+    }
 
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
 
-@app.route("/calculate", methods=["GET"])
-def calculate():
+@app.post("/calculate")
+def calculate(data: Calculation):
 
-    try:
-        num1 = float(request.args.get("num1"))
-        num2 = float(request.args.get("num2"))
-        operation = request.args.get("operation")
+    a = data.num1
+    b = data.num2
+    operation = data.operation.lower()
 
-        if operation == "add":
-            result = num1 + num2
+    logger.info(
+        "Calculation request: %s %s %s",
+        a, operation, b
+    )
 
-        elif operation == "subtract":
-            result = num1 - num2
+    if operation == "add":
+        result = a + b
 
-        elif operation == "multiply":
-            result = num1 * num2
+    elif operation == "subtract":
+        result = a - b
 
-        elif operation == "divide":
-            if num2 == 0:
-                return jsonify({"error": "Cannot divide by zero"}), 400
-            result = num1 / num2
+    elif operation == "multiply":
+        result = a * b
 
-        else:
-            return jsonify({"error": "Invalid operation"}), 400
+    elif operation == "divide":
+        if b == 0:
+            raise HTTPException(
+                status_code=400,
+                detail="Division by zero is not allowed"
+            )
+        result = a / b
 
-        print(f"Calculation: {num1} {operation} {num2} = {result}")
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid operation"
+        )
 
-        return jsonify({
-            "num1": num1,
-            "num2": num2,
-            "operation": operation,
-            "result": result
-        })
+    logger.info("Calculation result: %s", result)
 
-    except (TypeError, ValueError):
-        return jsonify({"error": "Please provide valid numbers"}), 400
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
+    return {
+        "num1": a,
+        "num2": b,
+        "operation": operation,
+        "result": result
+    }

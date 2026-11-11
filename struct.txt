@@ -1,0 +1,26 @@
+Folder PATH listing for volume New Volume
+Volume serial number is 0000008A BEA9:7A47
+E:.
+¦   calculator.py
+¦   docker.yml
+¦   Dockerfile
+¦   logs.txt
+¦   ps.txt
+¦   README.md
+¦   requirements.txt
+¦   struct.txt
+¦   
++---.github
+¦   +---workflows
+¦           ci.yaml
+¦           
++---app
+¦       main.py
+¦       __init__.py
+¦       
++---frontend
+¦       index.html
+¦       
++---tests
+        test.py
+        
