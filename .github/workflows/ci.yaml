@@ -83,7 +83,7 @@ jobs:
         run: docker rm -f calculator-app || true
   python:
     name: python runner
-    needs: docker
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
